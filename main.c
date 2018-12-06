@@ -152,6 +152,9 @@ void main(void)
         else if (key == 3) {
             //SEND PARTY MODE
         }
+        else if(key == 11) {
+            //USE THIS AS THE PUSH BUTTON TO TOGGLE FOCUS
+        }
 
         //MSPgets(EUSCI_A1_BASE, Buffer, BUFFER_SIZE);
         //TOGGLE THE LIGHT AND CHECK THE TEMP
