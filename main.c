@@ -24,6 +24,8 @@
 #define SIZE_ARRAY          25
 #define NUMBER_ARRAY        5
 #define CALIBRATION_START   0x000200000         // CALIBRATION START
+#define MAX_SPEED           85
+#define MAX_TEMP            20
 
 //uint16_t textColor = ST7735_WHITE;
 //uint16_t bgColor   = ST7735_BLACK;
@@ -56,6 +58,8 @@ int i = 0;
 int pos = 0;
 
 uint8_t bcdSecond, bcdMinute, bcdHour, bcdDay, bcdDate, bcdMonth, bcdYear;
+
+int previous_tmpInt = 0;
 
 uint8_t inline convertToBCD(uint8_t dec) {return (dec%10) | (((dec/10)%10) << 4);}
 uint8_t inline convertFromBCD(uint8_t bcd) {return (bcd & 0x0F) + (((bcd & 0xF0)>>4) * 10);}
@@ -103,7 +107,6 @@ void main(void)
 {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;     // Halt Watch-dog
 
-
     port_Init();
     COMMONCLOCKS_sysTick_Init();
 
@@ -116,7 +119,7 @@ void main(void)
 //    ST7735_FillScreen(bgColor);
 //    ST7735_SetRotation(3);
 
-    //Flashes Light
+    //Flashes on board Light
     P1DIR = 0x01;
     P1OUT = 0x00;
     P1OUT ^= 0x01;
@@ -140,6 +143,16 @@ void main(void)
         //SEE IF THE USER HAS GIVEN AN INPUT
         key = getKey();
 
+        if(key == 1) {
+            //SEND MENU OPTION
+        }
+        else if (key == 2) {
+            //SEND SECOND MENU OPTION
+        }
+        else if (key == 3) {
+            //SEND PARTY MODE
+        }
+
         //MSPgets(EUSCI_A1_BASE, Buffer, BUFFER_SIZE);
         //TOGGLE THE LIGHT AND CHECK THE TEMP
         if(firstClock >= 5) {
@@ -160,19 +173,22 @@ void main(void)
                 else {
 
                     Calculated_Speed = (((2.04*3.14) * ((Magnet_Counter)*15)) * 60)/5280; //Calculating the display speed
+
+                    //THIS NEEDS TO BE UPDATED WHEN TACHOMETER IS FIXED
                     Calculated_Rev = (((2.04*3.14) * ((Magnet_Counter)*15)));
 
                     if(Calculated_Speed > previous_Speed) {
                         int j = abs((Calculated_Speed-previous_Speed)-((Calculated_Speed-previous_Speed)%10));
-                        previous_Speed = Calculated_Speed;
+//                        previous_Speed = Calculated_Speed;
                         for(i=0;i<(j*4);i++) {
+                            //ADD CHECK USING POS TO MAKE SURE IT IS NOT THE EDGE OF THE SPEEDOMETER
                             driveMotor(0);
                         }
                         if(pos > 0)
                             pos = pos - (j);
 
 
-                        if(Calculated_Speed >= 85 && previous_Speed<85) {
+                        if(Calculated_Speed >= MAX_SPEED && previous_Speed <  MAX_SPEED) {
                             uint8_t i;                                                                                      // index
                             COMMONCLOCKS_sysTick_delay_48MHZ(msDelay);                                                      // Setting MCLK to 48MHz for faster programming
                             addr_pointer = CALIBRATION_START+4;                                                             // point to address in flash for saving data
@@ -208,6 +224,7 @@ void main(void)
                         int j = abs((Calculated_Speed-previous_Speed)-((Calculated_Speed-previous_Speed)%10));
                         previous_Speed = Calculated_Speed;
                         for(i=0;i<(j*4);i++) {
+                            //ADD CHECK USING POS TO MAKE SURE IT IS NOT THE EDGE OF THE SPEEDOMETER
                             driveMotor(1);
                         }
                         if(pos < 170)
@@ -323,14 +340,8 @@ void port_Init(void) {
     P4DIR  = 0X00;                                  // All bits in port 4 are setup as inputs
     P4REN |= 0b1111000;                             // Enable pull resistor on bits 3-6
     P4OUT |= 0b1111000;                             // Bits 3-6 are pull-up
-
 }
 
-//
-//
-// WILL HAVE TO ADJUST BECAUSE OF MOTORS
-//
-//
 int getKey()
 {
     for(col = 0; col < 3; col++)
@@ -591,40 +602,42 @@ void getTime(uint8_t optionKey) {
             tmpInt  =  RTC_registers[17];                   // get int of tempature
             tmpFrac = (RTC_registers[18] >> 6) * 25;        // get decimal of tempature
             printf("Degree C : %d.%d\n", tmpInt, tmpFrac);
+
+            //IF TEMP ABOVE 20 THEN SAVE
+            if(tmpInt >= MAX_TEMP && previous_tmpInt < MAX_TEMP) {
+                uint8_t i;                                                                                      // index
+                COMMONCLOCKS_sysTick_delay_48MHZ(msDelay);                                                      // Setting MCLK to 48MHz for faster programming
+                addr_pointer = CALIBRATION_START+4;                                                             // point to address in flash for saving data
+
+                for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                    timeArr1[i] = *addr_pointer++;
+                }
+
+                for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                    timeArr2[i] = *addr_pointer++;
+                }
+
+                for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                    timeArr3[i] = *addr_pointer++;
+                }
+
+                for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                    timeArr4[i] = *addr_pointer++;
+                }
+
+                for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                    timeArr5[i] = *addr_pointer++;
+                }
+
+                addr_pointer = CALIBRATION_START+4;                                                             // point to address in flash for saved data
+
+                printTime();
+            }
+
+            previous_tmpInt = tmpInt;
             break;
         default:
             break;
-    }
-
-    //IF TEMP ABOVE 20 THEN SAVE
-    if(tmpInt >= 20) {
-        uint8_t i;                                                                                      // index
-        COMMONCLOCKS_sysTick_delay_48MHZ(msDelay);                                                      // Setting MCLK to 48MHz for faster programming
-        addr_pointer = CALIBRATION_START+4;                                                             // point to address in flash for saving data
-
-        for(i=0; i<25; i++) {                                                                           // read values in flash before programming
-            timeArr1[i] = *addr_pointer++;
-        }
-
-        for(i=0; i<25; i++) {                                                                           // read values in flash before programming
-            timeArr2[i] = *addr_pointer++;
-        }
-
-        for(i=0; i<25; i++) {                                                                           // read values in flash before programming
-            timeArr3[i] = *addr_pointer++;
-        }
-
-        for(i=0; i<25; i++) {                                                                           // read values in flash before programming
-            timeArr4[i] = *addr_pointer++;
-        }
-
-        for(i=0; i<25; i++) {                                                                           // read values in flash before programming
-            timeArr5[i] = *addr_pointer++;
-        }
-
-        addr_pointer = CALIBRATION_START+4;                                                             // point to address in flash for saved data
-
-        printTime();
     }
 }
 
