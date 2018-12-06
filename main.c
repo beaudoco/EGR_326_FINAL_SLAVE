@@ -291,23 +291,23 @@ void iicInit() {
 
 void port_Init(void) {
 
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN0);                       // Configuring P4.1-.4 as an output
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN1);                       // Configuring P4.1-.4 as an output
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN2);                       // Configuring P4.1-.4 as an output
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN3);                       // Configuring P4.1-.4 as an output
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN4);                       // Configuring P4.1-.4 as an output
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN5);                       // Configuring P4.1-.4 as an output
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN6);                       // Configuring P4.1-.4 as an output
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN7);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN0);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN1);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN2);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN3);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN4);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN5);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN6);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN7);                       // Configuring P4.1-.4 as an output
 
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN0);                   //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN1);                   //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2);                    //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN3);                    //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN5);                   //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN6);                    //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN7);                    //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN0);                   //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN1);                   //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN2);                    //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN3);                    //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN4);                   //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN5);                   //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN6);                    //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN7);                    //
 
 }
 
@@ -356,34 +356,34 @@ void driveMotor(int right) {
     switch(count) {
 
     case 1:
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN1);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN2);                   //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN3);                    //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN1);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN2);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN3);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN4);                    //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 2:
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN1);
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN2);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN3);                   //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN1);
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN2);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN3);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN4);                    //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 3:
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN1);
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2);                    //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN3);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN1);
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN2);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN3);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN4);                   //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 4:
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN1);                   //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2);                    //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN3);                    //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN1);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN2);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN3);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN4);                   //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
@@ -411,34 +411,34 @@ void driveMotor2(int right) {
     switch(count2) {
 
     case 1:
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN5);                   //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN6);                    //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN7);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN4);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN5);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN6);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN7);                    //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 2:
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN5);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN6);                   //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN7);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN4);
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN5);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN6);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN7);                    //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 3:
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN5);                    //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN6);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN7);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN4);
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN5);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN6);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN7);                   //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 4:
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN5);                    //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN6);                    //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN7);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN4);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN5);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN6);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN7);                   //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
