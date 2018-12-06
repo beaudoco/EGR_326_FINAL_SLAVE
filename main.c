@@ -77,6 +77,7 @@ void initClocks();
 void Configure(void);
 void port_Init(void);
 void driveMotor(int);
+void driveMotor2(int);
 
 uint16_t promptUser(char* str);
 void timer32setup(void);
@@ -126,9 +127,11 @@ void main(void)
         driveMotor(0);
     }
 
-    for(i=0;i<(400*4);i++) {
-        driveMotor2(0);
-    }
+    //TAKING OUT TACHOMETER FOR NOW
+
+//    for(i=0;i<(400*4);i++) {
+//        driveMotor2(0);
+//    }
 
     uint8_t* addr_pointer;                                      // pointer to address in flash for reading back values
 
@@ -154,7 +157,7 @@ void main(void)
                 else {
 
                     Calculated_Speed = (((2.04*3.14) * ((Magnet_Counter)*15)) * 60)/5280; //Calculating the display speed
-                    Calculated_Rev = (((2.04*3.14) * ((Magnet_Counter)*15));
+                    Calculated_Rev = (((2.04*3.14) * ((Magnet_Counter)*15)));
 
                     if(Calculated_Speed > previous_Speed) {
                         int j = abs((Calculated_Speed-previous_Speed)-((Calculated_Speed-previous_Speed)%10));
@@ -208,24 +211,25 @@ void main(void)
                             pos = pos + (j);
                     }
 
-                    if(Calculated_Rev > previous_Rev) {
-                        int j = abs((Calculated_Rev-previous_Rev)-((Calculated_Rev-previous_Rev)%10));
-                        previous_Rev = Calculated_Rev;
-                        for(i=0;i<(j*4);i++) {
-                            driveMotor2(0);
-                        }
-                        if(pos > 0)
-                            pos = pos - (j);
-                    }
-                    else if(Calculated_Rev < previous_Rev) {
-                        int j = abs((Calculated_Rev-previous_Rev)-((Calculated_Rev-previous_Rev)%10));
-                        previous_Rev = Calculated_Rev;
-                        for(i=0;i<(j*4);i++) {
-                            driveMotor2(1);
-                        }
-                        if(pos < 170)
-                            pos = pos + (j);
-                    }
+                    //TAKING OUT TACHOMETER FOR RIGHT NOW
+//                    if(Calculated_Rev > previous_Rev) {
+//                        int j = abs((Calculated_Rev-previous_Rev)-((Calculated_Rev-previous_Rev)%10));
+//                        previous_Rev = Calculated_Rev;
+//                        for(i=0;i<(j*4);i++) {
+//                            driveMotor2(0);
+//                        }
+//                        if(pos > 0)
+//                            pos = pos - (j);
+//                    }
+//                    else if(Calculated_Rev < previous_Rev) {
+//                        int j = abs((Calculated_Rev-previous_Rev)-((Calculated_Rev-previous_Rev)%10));
+//                        previous_Rev = Calculated_Rev;
+//                        for(i=0;i<(j*4);i++) {
+//                            driveMotor2(1);
+//                        }
+//                        if(pos < 170)
+//                            pos = pos + (j);
+//                    }
 
                     char buf[12];
                     //ST7735_FillRect(2,8,10,2,bgColor);
@@ -309,6 +313,14 @@ void port_Init(void) {
     MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN6);                    //
     MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN7);                    //
 
+
+    //FOR KEYPAD
+    P4SEL0 = 0x00;                                  // Port 4 set for GPIO
+    P4SEL1 = 0x00;
+    P4DIR  = 0X00;                                  // All bits in port 4 are setup as inputs
+    P4REN |= 0b1111000;                             // Enable pull resistor on bits 3-6
+    P4OUT |= 0b1111000;                             // Bits 3-6 are pull-up
+
 }
 
 //
@@ -356,34 +368,34 @@ void driveMotor(int right) {
     switch(count) {
 
     case 1:
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN0);                   //
         MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN1);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN2);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN2);                    //
         MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN3);                    //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN4);                    //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 2:
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN1);
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN0);
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN1);                   //
         MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN2);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN3);                   //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN4);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN3);                    //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 3:
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN1);
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN2);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN0);
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN1);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN2);                   //
         MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN3);                   //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN4);                   //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
     case 4:
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN1);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN0);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN1);                    //
         MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN2);                    //
-        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN3);                    //
-        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN4);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P7, GPIO_PIN3);                   //
         COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
         break;
 
