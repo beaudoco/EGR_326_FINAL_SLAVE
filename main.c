@@ -137,6 +137,9 @@ void main(void)
 
     while(1)
     {
+        //SEE IF THE USER HAS GIVEN AN INPUT
+        key = getKey();
+
         //MSPgets(EUSCI_A1_BASE, Buffer, BUFFER_SIZE);
         //TOGGLE THE LIGHT AND CHECK THE TEMP
         if(firstClock >= 5) {
