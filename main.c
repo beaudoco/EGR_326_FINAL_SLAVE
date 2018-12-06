@@ -36,6 +36,8 @@ int User_Speed_Count = 0;
 int Seconds          = 0;   // Used to determine how many seconds have passed
 int Magnet_Counter   = 0;
 int Calculated_Speed = 0;
+int Calculated_Rev = 0;
+int previous_Rev = 0;
 int previous_Speed = 0;
 
 int sysTikToggleSpeed    = 15000;
@@ -44,6 +46,7 @@ int debounceFlag2        = 0;
 int colorState           = 0;
 int msDelay              = 25;
 int count                = 0;
+int count2               = 0;
 uint8_t key;
 
 int firstRead         = 1;
@@ -123,6 +126,12 @@ void main(void)
         driveMotor(0);
     }
 
+    for(i=0;i<(400*4);i++) {
+        driveMotor2(0);
+    }
+
+    uint8_t* addr_pointer;                                      // pointer to address in flash for reading back values
+
     while(1)
     {
         //MSPgets(EUSCI_A1_BASE, Buffer, BUFFER_SIZE);
@@ -145,21 +154,74 @@ void main(void)
                 else {
 
                     Calculated_Speed = (((2.04*3.14) * ((Magnet_Counter)*15)) * 60)/5280; //Calculating the display speed
+                    Calculated_Rev = (((2.04*3.14) * ((Magnet_Counter)*15));
 
                     if(Calculated_Speed > previous_Speed) {
-                        int j = Calculated_Speed-previous_Speed;
+                        int j = abs((Calculated_Speed-previous_Speed)-((Calculated_Speed-previous_Speed)%10));
+                        previous_Speed = Calculated_Speed;
+                        for(i=0;i<(j*4);i++) {
+                            driveMotor(0);
+                        }
+                        if(pos > 0)
+                            pos = pos - (j);
+
+
+                        if(Calculated_Speed >= 85 && previous_Speed<85) {
+                            uint8_t i;                                                                                      // index
+                            COMMONCLOCKS_sysTick_delay_48MHZ(msDelay);                                                      // Setting MCLK to 48MHz for faster programming
+                            addr_pointer = CALIBRATION_START+4;                                                             // point to address in flash for saving data
+
+                            for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                                timeArr1[i] = *addr_pointer++;
+                            }
+
+                            for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                                timeArr2[i] = *addr_pointer++;
+                            }
+
+                            for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                                timeArr3[i] = *addr_pointer++;
+                            }
+
+                            for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                                timeArr4[i] = *addr_pointer++;
+                            }
+
+                            for(i=0; i<25; i++) {                                                                           // read values in flash before programming
+                                timeArr5[i] = *addr_pointer++;
+                            }
+
+                            addr_pointer = CALIBRATION_START+4;                                                             // point to address in flash for saved data
+
+                            printTime();
+                        }
+
+                        previous_Speed = Calculated_Speed;
+                    }
+                    else if(Calculated_Speed < previous_Speed) {
+                        int j = abs((Calculated_Speed-previous_Speed)-((Calculated_Speed-previous_Speed)%10));
                         previous_Speed = Calculated_Speed;
                         for(i=0;i<(j*4);i++) {
                             driveMotor(1);
                         }
+                        if(pos < 170)
+                            pos = pos + (j);
+                    }
+
+                    if(Calculated_Rev > previous_Rev) {
+                        int j = abs((Calculated_Rev-previous_Rev)-((Calculated_Rev-previous_Rev)%10));
+                        previous_Rev = Calculated_Rev;
+                        for(i=0;i<(j*4);i++) {
+                            driveMotor2(0);
+                        }
                         if(pos > 0)
                             pos = pos - (j);
                     }
-                    if(Calculated_Speed < previous_Speed) {
-                        int j = previous_Speed-Calculated_Speed;
-                        previous_Speed = Calculated_Speed;
+                    else if(Calculated_Rev < previous_Rev) {
+                        int j = abs((Calculated_Rev-previous_Rev)-((Calculated_Rev-previous_Rev)%10));
+                        previous_Rev = Calculated_Rev;
                         for(i=0;i<(j*4);i++) {
-                            driveMotor(0);
+                            driveMotor2(1);
                         }
                         if(pos < 170)
                             pos = pos + (j);
@@ -229,22 +291,23 @@ void iicInit() {
 
 void port_Init(void) {
 
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN0);                       // Configuring P4.1-.4 as an output
     MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN1);                       // Configuring P4.1-.4 as an output
     MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN2);                       // Configuring P4.1-.4 as an output
     MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN3);                       // Configuring P4.1-.4 as an output
     MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN4);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN5);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN6);                       // Configuring P4.1-.4 as an output
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN7);                       // Configuring P4.1-.4 as an output
 
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN0);                   //
     MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN1);                   //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2);                   //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN2);                    //
     MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN3);                    //
-    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);                    //
-
-    //THIS IS FOR THE KEYPAD NEED TO RE-WRITE
-//    P4SEL0 = 0x00;                                  // Port 4 set for GPIO
-//    P4SEL1 = 0x00;
-//    P4DIR  = 0X00;                                  // All bits in port 4 are setup as inputs
-//    P4REN |= 0b1111000;                             // Enable pull resistor on bits 3-6
-//    P4OUT |= 0b1111000;                             // Bits 3-6 are pull-up
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN5);                   //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN6);                    //
+    MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN7);                    //
 
 }
 
@@ -340,6 +403,61 @@ void driveMotor(int right) {
             count = 4;
         else
             count--;
+    }
+
+}
+
+void driveMotor2(int right) {
+    switch(count2) {
+
+    case 1:
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN5);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN6);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN7);                    //
+        COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
+        break;
+
+    case 2:
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN5);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN6);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN7);                    //
+        COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
+        break;
+
+    case 3:
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN4);
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN5);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN6);                   //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN7);                   //
+        COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
+        break;
+
+    case 4:
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN4);                   //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN5);                    //
+        MAP_GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN6);                    //
+        MAP_GPIO_setOutputHighOnPin(GPIO_PORT_P4, GPIO_PIN7);                   //
+        COMMONCLOCKS_sysTick_delay_3MHZ(msDelay);
+        break;
+
+    default:
+        //printf("Collin doesn't know how to code");
+        break;
+    }
+
+    if(right) {
+        if(count2 == 4)
+            count2 = 0;
+        else
+            count2++;
+    }
+    else {
+        if(count2 == 0)
+            count2 = 4;
+        else
+            count2--;
     }
 
 }
